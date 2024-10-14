@@ -4,7 +4,7 @@
 const int START = 4;
 const int MAX_DEPTH = 1000;
 
-void gather_input(int&, int&);
+void gather_input(int&);
 
 OP* IDS(int, int);
 
@@ -17,7 +17,7 @@ int main() {
 
 	auto start = std::chrono::high_resolution_clock::now();
 
-	OP* solution = IDS(START, goal);
+	solution = IDS(START, goal);
 
 	auto end = std::chrono::high_resolution_clock::now();
 
@@ -44,6 +44,7 @@ OP* IDS(int start, int goal) {
 		if (solution) {
 			return solution;
 		}
+		delete root;
 	}
 	return NULL;
 }

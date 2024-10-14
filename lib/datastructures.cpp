@@ -45,7 +45,7 @@ OP* OP::DFS(int goal, int depth, std::unordered_map<double, OP*>& explored) {
 	}
 	this->expand(explored);
 
-	OP* children[] = {this->left, this->middle, this->right};
+	OP* children[] = {this->right, this->middle, this->left};
 
 	for (int i = 0; i < 3; i++) {
 		if (children[i] == NULL) {
@@ -56,10 +56,16 @@ OP* OP::DFS(int goal, int depth, std::unordered_map<double, OP*>& explored) {
 			return solution;
 		} else {
 			children[i]->delete_sub_tree();
+			delete children[i];
+			if (i == 0) {
+				this->right = NULL;
+			} else if (i == 1) {
+				this->middle = NULL;
+			} else if (i == 2) {
+				this->left = NULL;
+			}
 		}
 	}
-
-	this->delete_sub_tree();
 
 	return NULL;
 }
@@ -94,14 +100,17 @@ void OP::print_path() {
 void OP::delete_sub_tree() {
 	if (this->left) {
 		this->left->delete_sub_tree();
+		delete this->left;
+		this->left = NULL;
 	}
 	if (this->middle) {
 		this->middle->delete_sub_tree();
+		delete this->middle;
+		this->middle = NULL;
 	}
 	if (this->right) {
 		this->right->delete_sub_tree();
-	}
-	if (this->left == NULL && this->right == NULL && this->middle == NULL) {
-		delete this;
+		delete this->right;
+		this->right = NULL;
 	}
 }
