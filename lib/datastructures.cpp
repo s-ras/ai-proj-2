@@ -17,33 +17,26 @@ OP::OP(double data, std::string type, OP* parent) {
 	}
 }
 
-void OP::expand(std::unordered_map<double, OP*>& explored) {
+void OP::expand() {
 	double d_sqrt = sqrt(this->data);
 	double d_floor = floor(this->data);
 	double d_times_two = this->data * 2;
 
-	if (explored.find(d_sqrt) == explored.end()) {
-		this->left = new OP(d_sqrt, "sqrt", this);
-	}
+	this->left = new OP(d_sqrt, "sqrt", this);
 
-	if (explored.find(d_floor) == explored.end()) {
-		this->middle = new OP(d_floor, "floor", this);
-	}
+	this->middle = new OP(d_floor, "floor", this);
 
-	if (explored.find(d_times_two) == explored.end()) {
-		this->right = new OP(d_times_two, "times_two", this);
-	}
+	this->right = new OP(d_times_two, "times_two", this);
 }
 
-OP* OP::DFS(int goal, int depth, std::unordered_map<double, OP*>& explored) {
+OP* OP::DFS(int goal, int depth) {
 	if (this->data == goal) {
 		return this;
 	}
-	explored[this->data] = this;
 	if (this->d >= depth) {
 		return NULL;
 	}
-	this->expand(explored);
+	this->expand();
 
 	OP* children[] = {this->right, this->middle, this->left};
 
@@ -51,7 +44,7 @@ OP* OP::DFS(int goal, int depth, std::unordered_map<double, OP*>& explored) {
 		if (children[i] == NULL) {
 			continue;
 		}
-		OP* solution = children[i]->DFS(goal, depth, explored);
+		OP* solution = children[i]->DFS(goal, depth);
 		if (solution) {
 			return solution;
 		} else {
@@ -70,31 +63,25 @@ OP* OP::DFS(int goal, int depth, std::unordered_map<double, OP*>& explored) {
 	return NULL;
 }
 
+void OP::print() {
+	if (this->type == "root") {
+		std::cout << "start at " << this->data << std::endl;
+	} else if (this->type == "sqrt") {
+		std::cout << "sqrt(" << this->parent->data << ") = " << this->data
+				  << std::endl;
+	} else if (this->type == "floor") {
+		std::cout << "floor(" << this->parent->data << ") = " << this->data
+				  << std::endl;
+	} else if (this->type == "times_two") {
+		std::cout << this->parent->data << " * 2 = " << this->data << std::endl;
+	}
+}
+
 void OP::print_path() {
-	std::stack<OP*> s;
-
-	OP* current = this;
-
-	while (current != NULL) {
-		s.push(current);
-		current = current->parent;
+	if (this->parent) {
+		this->parent->print_path();
 	}
-
-	while (s.size() > 0) {
-		OP* op = s.top();
-		s.pop();
-		if (op->type == "root") {
-			std::cout << "start at " << op->data << std::endl;
-		} else if (op->type == "sqrt") {
-			std::cout << "sqrt(" << op->parent->data << ") = " << op->data
-					  << std::endl;
-		} else if (op->type == "floor") {
-			std::cout << "floor(" << op->parent->data << ") = " << op->data
-					  << std::endl;
-		} else if (op->type == "times_two") {
-			std::cout << op->parent->data << " * 2 = " << op->data << std::endl;
-		}
-	}
+	this->print();
 }
 
 void OP::delete_sub_tree() {

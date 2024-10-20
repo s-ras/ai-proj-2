@@ -3,9 +3,7 @@
 
 #include <math.h>
 #include <iostream>
-#include <queue>
 #include <stack>
-#include <unordered_map>
 #include <vector>
 
 class BST;
@@ -26,11 +24,13 @@ class OP {
 
 	OP(double, std::string, OP*);
 
-	OP* DFS(int, int, std::unordered_map<double, OP*>&);
+	OP* DFS(int, int);
 
-	void expand(std::unordered_map<double, OP*>&);
+	void expand();
 
 	void print_path();
+
+	void print();
 
 	void delete_sub_tree();
 };

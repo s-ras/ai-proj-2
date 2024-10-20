@@ -1,23 +1,32 @@
 #include <chrono>
 #include "./include/datastructures.h"
 
-const int START = 4;
+const int BASE = 4;
 const int MAX_DEPTH = 1000;
 
-void gather_input(int&);
+void gather_input(int&, int&);
 
-OP* IDS(int, int);
+OP* IDS(int, int, int);
 
 int main() {
-	int goal;
+	int goal, alg;
 
-	gather_input(goal);
+	gather_input(goal, alg);
 
 	OP* solution = NULL;
 
 	auto start = std::chrono::high_resolution_clock::now();
 
-	solution = IDS(START, goal);
+	switch (alg) {
+		case 1:
+			solution = IDS(BASE, goal, 1);
+			break;
+		case 2:
+			solution = IDS(BASE, goal, (int)floor(log2(goal)));
+			break;
+		default:
+			break;
+	}
 
 	auto end = std::chrono::high_resolution_clock::now();
 
@@ -31,16 +40,20 @@ int main() {
 	return 0;
 }
 
-void gather_input(int& goal) {
+void gather_input(int& goal, int& alg) {
 	std::cout << "Which number are you trying to reach? ";
 	std::cin >> goal;
+	std::cout << "Which algorithm do you want to use? " << std::endl;
+	std::cout << "1 - IDS starting at 1 initial depth" << std::endl;
+	std::cout << "2 - IDS starting at log2 initial depth" << std::endl;
+	std::cout << "? ";
+	std::cin >> alg;
 }
 
-OP* IDS(int start, int goal) {
-	for (int depth = 0; depth <= MAX_DEPTH; depth++) {
-		std::unordered_map<double, OP*> explored;
-		OP* root = new OP(start, "root", NULL);
-		OP* solution = root->DFS(goal, depth, explored);
+OP* IDS(int base, int goal, int init_depth) {
+	for (int depth = init_depth; depth <= MAX_DEPTH; depth++) {
+		OP* root = new OP(base, "root", NULL);
+		OP* solution = root->DFS(goal, depth);
 		if (solution) {
 			return solution;
 		}
